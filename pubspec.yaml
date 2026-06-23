@@ -24,3 +24,4 @@ flutter:
 
   assets:
     - assets/jogadores/
+    - assets/direcao/
