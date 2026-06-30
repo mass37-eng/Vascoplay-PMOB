@@ -93,8 +93,6 @@ class DatabaseHelperAtendimentos {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'vasco_atendimentos.db');
 
-    // Esse banco não é apagado ao iniciar, para manter o histórico
-    // de atendimentos entre sessões.
     return await openDatabase(
       path,
       version: 2,
