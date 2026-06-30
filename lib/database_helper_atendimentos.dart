@@ -1,7 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-/// Modelo que representa um atendimento (chamado de suporte) aberto pelo usuário.
 class Atendimento {
   final int? id;
   final String numero; // ex: "#001"
@@ -38,7 +37,7 @@ class Atendimento {
   }
 }
 
-/// Modelo que representa uma mensagem trocada dentro de um atendimento.
+
 class Mensagem {
   final int? id;
   final int atendimentoId;
@@ -146,14 +145,12 @@ class DatabaseHelperAtendimentos {
     return await db.insert('atendimentos', atendimento.toMap());
   }
 
-  /// Retorna todos os atendimentos, do mais recente para o mais antigo.
   Future<List<Atendimento>> getAllAtendimentos() async {
     final db = await database;
     final maps = await db.query('atendimentos', orderBy: 'id DESC');
     return maps.map((m) => Atendimento.fromMap(m)).toList();
   }
 
-  /// Atualiza o status de um atendimento (ex: ao mover para "Em andamento").
   Future<int> updateStatus(int id, String novoStatus) async {
     final db = await database;
     return await db.update(
@@ -169,13 +166,11 @@ class DatabaseHelperAtendimentos {
     return await db.delete('atendimentos', where: 'id = ?', whereArgs: [id]);
   }
 
-  /// Insere uma nova mensagem dentro de um atendimento.
   Future<int> insertMensagem(Mensagem mensagem) async {
     final db = await database;
     return await db.insert('mensagens', mensagem.toMap());
   }
 
-  /// Retorna todas as mensagens de um atendimento, da mais antiga para a mais nova.
   Future<List<Mensagem>> getMensagensDoAtendimento(int atendimentoId) async {
     final db = await database;
     final maps = await db.query(
