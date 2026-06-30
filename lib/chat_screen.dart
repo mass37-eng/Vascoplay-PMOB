@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'database_helper_atendimentos.dart';
 
-/// Tela de chat de um atendimento específico.
-/// Mantém o mesmo visual (preto + cinza escuro) da tela de Conversas.
 class ChatScreen extends StatefulWidget {
   final Atendimento atendimento;
 
@@ -61,8 +59,6 @@ class _ChatScreenState extends State<ChatScreen> {
     _mensagemController.clear();
     await _carregarMensagens();
 
-    // Caso o atendimento ainda esteja "Aberta", muda para "Em andamento"
-    // assim que o usuário manda a primeira mensagem.
     if (widget.atendimento.status == 'Aberta') {
       await _dbHelper.updateStatus(widget.atendimento.id!, 'Em andamento');
     }
@@ -139,7 +135,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
 
-          // BARRA DE ENVIO
+
           Container(
             color: Colors.black,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
