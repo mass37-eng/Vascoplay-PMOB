@@ -1,14 +1,14 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-/// Modelo que representa uma compra de plano feita pelo usuário.
+
 class Compra {
   final int? id;
   final String plano;
   final double preco;
   final String nomeComprador;
   final String formaPagamento;
-  final String dataCompra; // armazenada em formato ISO8601
+  final String dataCompra;
 
   Compra({
     this.id,
@@ -61,8 +61,7 @@ class DatabaseHelperCompras {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'vasco_compras.db');
 
-    // Diferente do banco de jogadores, este banco NÃO é apagado ao iniciar,
-    // pois precisamos manter o histórico de compras entre sessões.
+   
     return await openDatabase(
       path,
       version: 1,
@@ -83,20 +82,20 @@ class DatabaseHelperCompras {
     ''');
   }
 
-  /// Insere uma nova compra no banco e retorna o id gerado.
+  
   Future<int> insertCompra(Compra compra) async {
     final db = await database;
     return await db.insert('compras', compra.toMap());
   }
 
-  /// Retorna todas as compras, da mais recente para a mais antiga.
+  
   Future<List<Compra>> getAllCompras() async {
     final db = await database;
     final maps = await db.query('compras', orderBy: 'id DESC');
     return maps.map((m) => Compra.fromMap(m)).toList();
   }
 
-  /// Remove uma compra pelo id (útil para "cancelar" um registro de teste).
+  
   Future<int> deleteCompra(int id) async {
     final db = await database;
     return await db.delete('compras', where: 'id = ?', whereArgs: [id]);
