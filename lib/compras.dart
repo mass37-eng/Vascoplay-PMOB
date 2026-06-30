@@ -104,7 +104,7 @@ class _ComprarPlanoScreenState extends State<ComprarPlanoScreen> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            // TÍTULO
+           
             const Text(
               'COMPRAR PLANO',
               style: TextStyle(
@@ -115,7 +115,7 @@ class _ComprarPlanoScreenState extends State<ComprarPlanoScreen> {
             ),
             const SizedBox(height: 24),
 
-            // ESCOLHA DO PLANO (toggle simples entre os 2 planos)
+           
             const Text('Escolha o plano',
                 style: TextStyle(color: Colors.white70, fontSize: 13)),
             const SizedBox(height: 8),
@@ -165,7 +165,7 @@ class _ComprarPlanoScreenState extends State<ComprarPlanoScreen> {
 
             const SizedBox(height: 24),
 
-            // NOME
+           
             const Text('Seu nome',
                 style: TextStyle(color: Colors.white70, fontSize: 13)),
             const SizedBox(height: 8),
@@ -188,7 +188,7 @@ class _ComprarPlanoScreenState extends State<ComprarPlanoScreen> {
 
             const SizedBox(height: 20),
 
-            // FORMA DE PAGAMENTO
+            
             const Text('Forma de pagamento',
                 style: TextStyle(color: Colors.white70, fontSize: 13)),
             const SizedBox(height: 8),
@@ -218,7 +218,7 @@ class _ComprarPlanoScreenState extends State<ComprarPlanoScreen> {
 
             const SizedBox(height: 28),
 
-            // BOTÃO DE COMPRA
+            
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -240,7 +240,7 @@ class _ComprarPlanoScreenState extends State<ComprarPlanoScreen> {
 
             const SizedBox(height: 32),
 
-            // HISTÓRICO
+          
             const Text(
               'Minhas compras',
               style: TextStyle(
