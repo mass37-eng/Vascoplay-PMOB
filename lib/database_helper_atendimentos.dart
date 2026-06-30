@@ -3,10 +3,10 @@ import 'package:path/path.dart';
 
 class Atendimento {
   final int? id;
-  final String numero; // ex: "#001"
+  final String numero;
   final String assunto;
-  final String status; // "Aberta", "Em andamento" ou "Encerrada"
-  final String dataAbertura; // ISO8601
+  final String status;
+  final String dataAbertura;
 
   Atendimento({
     this.id,
@@ -42,8 +42,8 @@ class Mensagem {
   final int? id;
   final int atendimentoId;
   final String texto;
-  final bool doUsuario; // true = enviada pelo usuário, false = pelo suporte
-  final String dataEnvio; // ISO8601
+  final bool doUsuario; 
+  final String dataEnvio;
 
   Mensagem({
     this.id,
