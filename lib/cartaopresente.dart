@@ -19,7 +19,7 @@ class ComprarCartaoPresenteApp extends StatelessWidget {
   }
 }
 
-/// Mesmos cartões e benefícios do ValePresente.dart original.
+
 class _CartaoInfo {
   final String titulo;
   final double preco;
@@ -127,7 +127,7 @@ class _ComprarCartaoPresenteScreenState
     return Scaffold(
       body: Stack(
         children: [
-          /// BACKGROUND (igual ao original)
+      
           Positioned.fill(
             child: Image.network(
               "https://vasco.com.br/wp-content/uploads/2023/05/torcida-vasco.jpg",
@@ -136,14 +136,14 @@ class _ComprarCartaoPresenteScreenState
             ),
           ),
 
-          /// OVERLAY ESCURO
+   
           Positioned.fill(
             child: Container(color: Colors.black.withOpacity(0.45)),
           ),
 
           Column(
             children: [
-              /// HEADER (igual ao original)
+         
               SafeArea(
                 child: Container(
                   color: Colors.black,
@@ -177,13 +177,12 @@ class _ComprarCartaoPresenteScreenState
                 ),
               ),
 
-              /// CONTEÚDO
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 22, vertical: 25),
                   children: [
-                    // CARTÕES SELECIONÁVEIS (visual igual ao GiftCardPlan original)
+                 
                     ...List.generate(_cartoes.length, (i) {
                       final selecionado = i == _cartaoSelecionado;
                       return Padding(
@@ -198,7 +197,7 @@ class _ComprarCartaoPresenteScreenState
                       );
                     }),
 
-                    // FORMULÁRIO DE COMPRA
+               
                     Container(
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
@@ -295,7 +294,7 @@ class _ComprarCartaoPresenteScreenState
 
                     const SizedBox(height: 28),
 
-                    // HISTÓRICO
+              
                     const Text(
                       'Meus cartões presente',
                       style: TextStyle(
@@ -361,8 +360,7 @@ class _ComprarCartaoPresenteScreenState
   }
 }
 
-/// Card visual praticamente idêntico ao GiftCardPlan do ValePresente.dart original,
-/// mas agora reagindo a toque para indicar seleção.
+
 class _GiftCardPlan extends StatelessWidget {
   final _CartaoInfo cartao;
   final bool selecionado;
@@ -384,7 +382,7 @@ class _GiftCardPlan extends StatelessWidget {
         ),
         child: Column(
           children: [
-            /// TOPO CARD
+       
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -418,7 +416,6 @@ class _GiftCardPlan extends StatelessWidget {
               ),
             ),
 
-            /// BENEFÍCIOS
             Padding(
               padding: const EdgeInsets.all(18),
               child: Column(
@@ -445,7 +442,7 @@ class _GiftCardPlan extends StatelessWidget {
               ),
             ),
 
-            /// PREÇO
+   
             Transform.translate(
               offset: const Offset(0, 15),
               child: Container(
