@@ -1,7 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-
 class Compra {
   final int? id;
   final String plano;
@@ -43,30 +42,23 @@ class Compra {
 }
 
 class DatabaseHelperCompras {
-  static final DatabaseHelperCompras instance =
-  DatabaseHelperCompras._internal();
-  static Database? _database;
+  Database? _database;
 
-  DatabaseHelperCompras._internal();
+  Future<Database> getDatabase() async {
+    if (_database != null) {
+      return _database!;
+    }
 
-  factory DatabaseHelperCompras() => instance;
-
-  Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDatabase();
-    return _database!;
-  }
-
-  Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'vasco_compras.db');
 
-   
-    return await openDatabase(
+    _database = await openDatabase(
       path,
       version: 1,
       onCreate: _onCreate,
     );
+
+    return _database!;
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -82,27 +74,35 @@ class DatabaseHelperCompras {
     ''');
   }
 
-  
   Future<int> insertCompra(Compra compra) async {
-    final db = await database;
+    final db = await getDatabase();
     return await db.insert('compras', compra.toMap());
   }
 
-  
   Future<List<Compra>> getAllCompras() async {
-    final db = await database;
+    final db = await getDatabase();
     final maps = await db.query('compras', orderBy: 'id DESC');
-    return maps.map((m) => Compra.fromMap(m)).toList();
+
+    List<Compra> compras = [];
+
+    for (var m in maps) {
+      compras.add(Compra.fromMap(m));
+    }
+
+    return compras;
   }
 
-  
   Future<int> deleteCompra(int id) async {
-    final db = await database;
-    return await db.delete('compras', where: 'id = ?', whereArgs: [id]);
+    final db = await getDatabase();
+    return await db.delete(
+      'compras',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   Future<void> close() async {
-    final db = await database;
+    final db = await getDatabase();
     db.close();
   }
 }
