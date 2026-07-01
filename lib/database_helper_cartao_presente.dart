@@ -1,14 +1,14 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-/// Modelo que representa a compra de um cartão presente.
+
 class CompraCartaoPresente {
   final int? id;
   final String cartao;
   final double preco;
   final String nomeComprador;
   final String formaPagamento;
-  final String dataCompra; // ISO8601
+  final String dataCompra; 
 
   CompraCartaoPresente({
     this.id,
@@ -61,8 +61,7 @@ class DatabaseHelperCartaoPresente {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'vasco_cartao_presente.db');
 
-    // Esse banco não é apagado ao iniciar, para manter o histórico
-    // de cartões presente comprados entre sessões.
+  
     return await openDatabase(
       path,
       version: 1,
