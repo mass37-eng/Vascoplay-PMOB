@@ -27,6 +27,8 @@ class Atendimento {
         assunto: map['assunto'],
         dataAbertura: map['data_abertura'],
       );
+
+  get status => null;
 }
  
 class Mensagem {
@@ -167,5 +169,7 @@ class DatabaseHelperAtendimentos {
     final db = await getDatabase();
     await db.close();
   }
+
+  Future<void> updateStatus(int i, String s) async {}
 }
  
