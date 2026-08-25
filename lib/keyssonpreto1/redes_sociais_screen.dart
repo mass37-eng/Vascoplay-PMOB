@@ -70,9 +70,6 @@ class _RedesSociaisScreenState extends State<RedesSociaisScreen> {
       facebook: facebookController.text.trim(),
     );
     await RedesDao.salvar(redes);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Links salvos com sucesso!'), backgroundColor: Color(0xFFE02020)),
-    );
   }
 
   Future<void> limparTudo() async {
