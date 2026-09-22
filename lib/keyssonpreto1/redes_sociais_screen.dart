@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'api/avatar_api.dart';
 import 'database_helper_redes.dart';
 
 void main() async {
@@ -44,10 +48,16 @@ class _RedesSociaisScreenState extends State<RedesSociaisScreen> {
 
   bool carregando = true;
 
+  // ---------------------------------------------------------------------
+  // Foto de perfil aleatória (API pública DiceBear - lib/keyssonpreto1/api/avatar_api.dart)
+  // ---------------------------------------------------------------------
+  late Future<Uint8List> futureAvatar;
+
   @override
   void initState() {
     super.initState();
     carregarLinks();
+    futureAvatar = AvatarApi().gerarAvatarAleatorio();
   }
 
   Future<void> carregarLinks() async {
@@ -194,8 +204,44 @@ class _RedesSociaisScreenState extends State<RedesSociaisScreen> {
               style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900, letterSpacing: 2),
             ),
           ),
-          const Icon(Icons.account_circle_outlined, color: Colors.grey, size: 36),
+          avatarPerfil(),
         ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------
+  // Avatar de perfil gerado pela API DiceBear via FutureBuilder
+  // ---------------------------------------------------------------------
+  Widget avatarPerfil() {
+    return GestureDetector(
+      onTap: () {
+        // toca no avatar para gerar um novo, sem precisar reabrir o app
+        setState(() {
+          futureAvatar = AvatarApi().gerarAvatarAleatorio();
+        });
+      },
+      child: FutureBuilder<Uint8List>(
+        future: futureAvatar,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Icon(Icons.account_circle_outlined, color: Colors.grey, size: 36);
+          }
+
+          if (!snapshot.hasData) {
+            return const SizedBox(
+              width: 36,
+              height: 36,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+            );
+          }
+
+          return CircleAvatar(
+            radius: 18,
+            backgroundColor: Colors.white,
+            backgroundImage: MemoryImage(snapshot.requireData),
+          );
+        },
       ),
     );
   }
