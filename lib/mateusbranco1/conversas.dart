@@ -1,108 +1,93 @@
 import 'package:flutter/material.dart';
 import 'database_helper_atendimentos.dart';
 import 'chat_screen.dart';
- 
+import 'api_service.dart';
+
 void main() => runApp(const ConversasApp());
- 
+
 class ConversasApp extends StatelessWidget {
   const ConversasApp({super.key});
- 
+
   @override
-  Widget build(BuildContext context) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Meus Atendimentos',
-        theme: ThemeData.dark(),
-        home: const ConversasScreen(),
-      );
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Meus Atendimentos',
+      home: const ConversasScreen(),
+    );
+  }
 }
- 
+
 class ConversasScreen extends StatefulWidget {
   const ConversasScreen({super.key});
- 
+
   @override
   State<ConversasScreen> createState() => _ConversasScreenState();
 }
- 
+
 class _ConversasScreenState extends State<ConversasScreen> {
-  static const _corFundo = Colors.black;
-  static const _corCard = Color(0xff1A1A1A);
- 
   final _dbHelper = DatabaseHelperAtendimentos.instance;
- 
+
   List<Atendimento> _atendimentos = [];
   bool _carregando = true;
- 
+
+  late Future<List<Map<String, dynamic>>> _futureAtendentes;
+
   @override
   void initState() {
     super.initState();
     _carregarAtendimentos();
+    _futureAtendentes = FakeApiService.buscarAtendentes();
   }
- 
+
   Future<void> _carregarAtendimentos() async {
     final lista = await _dbHelper.getAllAtendimentos();
-    if (!mounted) return;
     setState(() {
       _atendimentos = lista;
       _carregando = false;
     });
   }
- 
-  String _proximoNumero() =>
-      "#${(_atendimentos.length + 1).toString().padLeft(3, '0')}";
- 
+
+  String _proximoNumero() => '${_atendimentos.length + 1}';
+
   Future<void> _abrirNovoAtendimento() async {
     final assuntoController = TextEditingController();
- 
+
     final confirmou = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: _corCard,
-        title: const Text(
-          'Novo atendimento',
-          style: TextStyle(color: Colors.white, fontSize: 18),
-        ),
+        title: const Text('Novo atendimento'),
         content: TextField(
           controller: assuntoController,
-          autofocus: true,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            labelText: 'Qual o assunto?',
-            labelStyle: TextStyle(color: Colors.white70),
-            enabledBorder: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(labelText: 'Qual o assunto?'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancelar'),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
-            ),
+          TextButton(
             onPressed: () {
               if (assuntoController.text.trim().isEmpty) return;
               Navigator.pop(context, true);
             },
-            child: const Text('ABRIR'),
+            child: const Text('Abrir'),
           ),
         ],
       ),
     );
- 
+
     if (confirmou != true) return;
- 
+
     final atendimento = Atendimento(
       numero: _proximoNumero(),
       assunto: assuntoController.text.trim(),
       dataAbertura: DateTime.now().toIso8601String(),
     );
- 
+
     await _dbHelper.insertAtendimento(atendimento);
     await _carregarAtendimentos();
   }
- 
+
   Future<void> _abrirChat(Atendimento atendimento) async {
     await Navigator.push(
       context,
@@ -112,86 +97,75 @@ class _ConversasScreenState extends State<ConversasScreen> {
     );
     await _carregarAtendimentos();
   }
- 
+
   Future<void> _excluirAtendimento(int id) async {
     await _dbHelper.deleteMensagensDoAtendimento(id);
     await _dbHelper.deleteAtendimento(id);
     await _carregarAtendimentos();
   }
- 
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: _corFundo,
-        appBar: AppBar(
-          backgroundColor: _corFundo,
-          elevation: 0,
-          centerTitle: true,
-          title: const Text(
-            "MEUS ATENDIMENTOS",
-            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 2),
-          ),
-        ),
-        body: _buildBody(),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-          onPressed: _abrirNovoAtendimento,
-          child: const Icon(Icons.add),
-        ),
-      );
- 
-  Widget _buildBody() {
-    if (_carregando) {
-      return const Center(
-        child: CircularProgressIndicator(color: Colors.white),
-      );
-    }
-    if (_atendimentos.isEmpty) {
-      return const Center(
-        child: Text(
-          "Você ainda não abriu nenhum atendimento.",
-          style: TextStyle(color: Colors.white54),
-        ),
-      );
-    }
-    final cards = <Widget>[];
-    for (final atendimento in _atendimentos) {
-      cards.add(_atendimentoCard(atendimento));
-    }
- 
-    return ListView(
-      padding: const EdgeInsets.all(15),
-      children: cards,
-    );
-  }
- 
-  Widget _atendimentoCard(Atendimento atendimento) {
-    return Card(
-      color: _corCard,
-      margin: const EdgeInsets.only(bottom: 15),
-      child: ListTile(
-        leading: const CircleAvatar(
-          backgroundColor: Colors.white,
-          child: Icon(Icons.chat, color: Colors.black),
-        ),
-        title: Text(
-          "Atendimento ${atendimento.numero}",
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        subtitle: Text(
-          atendimento.assunto,
-          style: const TextStyle(color: Colors.white70),
-        ),
-        trailing: IconButton(
-          onPressed: () => _excluirAtendimento(atendimento.id!),
-          icon: const Icon(Icons.delete_outline, color: Colors.white38),
-        ),
-        onTap: () => _abrirChat(atendimento),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Meus Atendimentos')),
+      body: Column(
+        children: [
+          _textoAtendentes(),
+          Expanded(child: _buildBody()),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _abrirNovoAtendimento,
+        child: const Icon(Icons.add),
       ),
     );
   }
+
+  Widget _textoAtendentes() {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _futureAtendentes,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Text('Carregando atendentes...');
+        }
+        if (snapshot.hasError) {
+          return const Text('Não foi possível carregar os atendentes.');
+        }
+
+        final atendentes = snapshot.data ?? [];
+        final nomes = <String>[];
+        for (final atendente in atendentes) {
+          final nome = atendente['host'] ?? atendente['local'] ?? 'Sem nome';
+          nomes.add(nome);
+        }
+        return Text('Atendentes: ${nomes.join(', ')}');
+      },
+    );
+  }
+
+  Widget _buildBody() {
+    if (_carregando) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_atendimentos.isEmpty) {
+      return const Center(
+        child: Text('Você ainda não abriu nenhum atendimento.'),
+      );
+    }
+    return ListView.builder(
+      itemCount: _atendimentos.length,
+      itemBuilder: (context, index) {
+        final atendimento = _atendimentos[index];
+        return ListTile(
+          title: Text('Atendimento ${atendimento.numero}'),
+          subtitle: Text(atendimento.assunto),
+          trailing: IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () => _excluirAtendimento(atendimento.id!),
+          ),
+          onTap: () => _abrirChat(atendimento),
+        );
+      },
+    );
+  }
 }
- 
