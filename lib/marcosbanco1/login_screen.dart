@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'main_menu_screen.dart';
+import 'email_service.dart';
 
-/// Tela de login do Vasco Play — versão simplificada:
-/// fundo preto liso, logo do Vasco, card branco com usuário/senha
-/// e botão "Continuar". Sem Stack/faixas decorativas, para evitar
-/// problemas de layout.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -17,6 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
   bool _senhaVisivel = false;
+  bool _enviandoEmail = false;
 
   @override
   void dispose() {
@@ -25,20 +23,43 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _continuar() {
+  Future<void> _continuar() async {
     final usuario = _usuarioController.text.trim();
     final senha = _senhaController.text.trim();
 
-    // TODO: substituir pela lógica real de autenticação
     debugPrint('Usuário: $usuario | Senha: $senha');
 
+    if (usuario.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Digite um e-mail válido.')),
+      );
+      return;
+    }
+
+    setState(() => _enviandoEmail = true);
+
+    // Envia o e-mail de confirmação de login.
+
+    final enviado = await EmailService.enviarConfirmacaoLogin(usuario);
+
+    if (!mounted) return;
+    setState(() => _enviandoEmail = false);
+
+    if (!enviado) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login feito, mas não consegui enviar o e-mail de confirmação.'),
+        ),
+      );
+    }
+
+    if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const MainMenuScreen()),
     );
   }
 
   void _novoUsuario() {
-    // TODO: navegar para a tela de cadastro
   }
 
   @override
@@ -50,26 +71,28 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: 24),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Logo + "Vasco Play"
+              // Logo
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Escudo do Vasco
-                    SizedBox(
-                      width: 90,
-                      height: 90,
-                      child: Image.asset(
-                        'assets/direcao/vasco_escudo.png',
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.shield, color: Colors.white, size: 60),
+                    Image.asset(
+                      'assets/jogadores/logo_vasco.png',
+                      width: 48,
+                      height: 48,
+                      errorBuilder: (_, __, ___) => const Icon(
+                        Icons.image_not_supported,
+                        color: Colors.white,
                       ),
                     ),
+
                     const SizedBox(width: 12),
 
-                    // Placa "VASCO PLAY"
+                    // Placa VASCO PLAY
                     Expanded(
                       child: Container(
                         height: 70,
@@ -95,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 130),
 
-              // Card branco com o formulário
+              // fundo branco com o formulário
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
@@ -121,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
 
-                    // Senha + botão Continuar lado a lado
+                    // Senha e botão Continuar
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -133,8 +156,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 24),
 
-                    // Divisor "ou utilize uma das opções abaixo"
+                    // Divisor
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: const [
                         Expanded(child: Divider(color: Colors.grey)),
                         Padding(
@@ -233,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildBotaoContinuar() {
     return ElevatedButton(
-      onPressed: _continuar,
+      onPressed: _enviandoEmail ? null : _continuar,
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
@@ -242,7 +266,13 @@ class _LoginScreenState extends State<LoginScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      child: const Text(
+      child: _enviandoEmail
+          ? const SizedBox(
+        width: 18,
+        height: 18,
+        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+      )
+          : const Text(
         'CONTINUAR',
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       ),

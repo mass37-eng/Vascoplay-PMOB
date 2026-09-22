@@ -7,11 +7,6 @@ import '../keyssonpreto1/redes_sociais_screen.dart';
 import '../lucaspreto1/cartaopresente.dart';
 import '../gustavopardo1/compras.dart';
 import '../mateusbranco1/conversas.dart';
-import '../telas-iniciais1/Perfil.dart';
-import '../telas-iniciais1/Planos.dart';
-import '../telas-iniciais1/ValePresente.dart';
-import '../telas-iniciais1/ingrecos.dart';
-import '../telas-iniciais1/ouvidoria.dart';
 
 
 class MainMenuScreen extends StatelessWidget {
@@ -37,18 +32,6 @@ class MainMenuScreen extends StatelessWidget {
       builder: (_) => const CamarotesScreen(),
     ),
     _MenuEntry(
-      titulo: 'Ingressos',
-      subtitulo: 'Compra de ingressos para os jogos',
-      icone: Icons.confirmation_number,
-      builder: (_) => const IngressosScreen(),
-    ),
-    _MenuEntry(
-      titulo: 'Planos Sócio Gigante',
-      subtitulo: 'Conheça e assine um plano de sócio',
-      icone: Icons.card_membership,
-      builder: (_) => const PlanosScreen(),
-    ),
-    _MenuEntry(
       titulo: 'Assinar Plano',
       subtitulo: 'Finalize a contratação do seu plano',
       icone: Icons.shopping_cart,
@@ -61,34 +44,16 @@ class MainMenuScreen extends StatelessWidget {
       builder: (_) => const ComprarCartaoPresenteScreen(),
     ),
     _MenuEntry(
-      titulo: 'Vale Presente',
-      subtitulo: 'Envie um vale presente para outro torcedor',
-      icone: Icons.redeem,
-      builder: (_) => const GiftCardScreen(),
-    ),
-    _MenuEntry(
       titulo: 'Redes Sociais',
       subtitulo: 'Acompanhe o Vasco nas redes',
       icone: Icons.share,
       builder: (_) => const RedesSociaisScreen(),
     ),
     _MenuEntry(
-      titulo: 'Ouvidoria',
-      subtitulo: 'Fale com o clube, envie dúvidas e sugestões',
-      icone: Icons.support_agent,
-      builder: (_) => const OuvidoriaScreen(),
-    ),
-    _MenuEntry(
       titulo: 'Atendimento',
       subtitulo: 'Converse com o suporte do Vasco Play',
       icone: Icons.chat_bubble,
       builder: (_) => const ConversasScreen(),
-    ),
-    _MenuEntry(
-      titulo: 'Perfil',
-      subtitulo: 'Seus dados de torcedor',
-      icone: Icons.person,
-      builder: (_) => const PerfilScreen(),
     ),
   ];
 
