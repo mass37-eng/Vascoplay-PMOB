@@ -3,10 +3,6 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 
-// API pública real: DiceBear (https://www.dicebear.com)
-// Gera avatares (imagens) de forma determinística a partir de uma "seed".
-// Aqui geramos uma seed nova a cada chamada, para que o avatar mude
-// toda vez que o app for aberto.
 class AvatarApi {
   final dio = Dio();
   String baseUrl = 'https://api.dicebear.com/10.x';
