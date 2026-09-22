@@ -1,0 +1,22 @@
+{
+  "clientes_cadastrados": [
+    {
+      "id": 1,
+      "nome": "Carlos Alberto Souza",
+      "cpf": "123.456.789-09",
+      "plano": "PREMIUM"
+    },
+    {
+      "id": 2,
+      "nome": "Marina Ferreira Lima",
+      "cpf": "234.567.890-92",
+      "plano": "INTERMEDIÁRIO"
+    },
+    {
+      "id": 3,
+      "nome": "Roberto Nascimento",
+      "cpf": "345.678.901-75",
+      "plano": "BASICO"
+    }
+  ]
+}
