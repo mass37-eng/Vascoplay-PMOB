@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'api/camarote_fake_api.dart';
+import 'api/cpf_api.dart';
 import 'database_helper_camarotes.dart';
+import 'domain/cliente_camarote.dart';
+import 'domain/sugestao_cpf.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,6 +49,13 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
   TextEditingController nomeController = TextEditingController();
   TextEditingController cpfController = TextEditingController();
 
+  // ---------------------------------------------------------------------
+  // As duas APIs consumidas nesta tela ficam em lib/keyssonpreto1/api.
+  // Aqui só guardamos os Futures usados pelos FutureBuilder.
+  // ---------------------------------------------------------------------
+  late Future<List<SugestaoCpf>> futureSugestoesCpf;
+  late Future<List<ClienteCamarote>> futureClientesFakeApi;
+
   List<Map<String, dynamic>> planos = [
     {
       'titulo': 'BASICO',
@@ -83,6 +95,8 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
   void initState() {
     super.initState();
     carregarRegistros();
+    futureSugestoesCpf = CpfApi().listarSugestoes();
+    futureClientesFakeApi = CamaroteFakeApi().listarClientes();
   }
 
   Future<void> carregarRegistros() async {
@@ -95,8 +109,6 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
   Future<void> registrar() async {
     String nome = nomeController.text.trim();
     String cpf = cpfController.text.trim();
-
-
     Map<String, dynamic> plano = planos[planoSelecionado!];
 
     CamaroteRegistro novoRegistro = CamaroteRegistro(
@@ -149,11 +161,15 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
                     cardPlano(1, planos[1]),
                     cardPlano(2, planos[2]),
                     const SizedBox(height: 10),
+                    secaoSugestoesCpf(),
+                    const SizedBox(height: 10),
                     formulario(),
                     if (listaRegistros.isNotEmpty) ...[
                       const SizedBox(height: 20),
                       secaoRegistros(),
                     ],
+                    const SizedBox(height: 20),
+                    secaoClientesFakeApi(),
                     const SizedBox(height: 16),
                   ],
                 ),
@@ -284,6 +300,90 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
                 ],
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------
+  // Seção da API pública (CpfApi) - sugestões de CPF via FutureBuilder
+  // ---------------------------------------------------------------------
+  Widget secaoSugestoesCpf() {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F2F2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black, width: 1),
+      ),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'SUGESTÕES DE CPF (API PÚBLICA)',
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 1),
+              ),
+              IconButton(
+                icon: const Icon(Icons.refresh, size: 20),
+                onPressed: () {
+                  setState(() {
+                    futureSugestoesCpf = CpfApi().listarSugestoes();
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          FutureBuilder<List<SugestaoCpf>>(
+            future: futureSugestoesCpf,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Text(
+                  'Não foi possível carregar sugestões: ${snapshot.error}',
+                  style: const TextStyle(color: Colors.red, fontSize: 12),
+                );
+              }
+
+              if (!snapshot.hasData) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              List<SugestaoCpf> sugestoes = snapshot.requireData;
+
+              if (sugestoes.isEmpty) {
+                return const Text('Nenhuma sugestão disponível no momento.');
+              }
+
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: sugestoes.map((sugestao) {
+                  return ActionChip(
+                    label: Text(
+                      '${sugestao.nome} • ${sugestao.cpf}',
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                    ),
+                    backgroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.black),
+                    onPressed: () {
+                      setState(() {
+                        cpfController.text = sugestao.cpf;
+                        if (nomeController.text.trim().isEmpty) {
+                          nomeController.text = sugestao.nome;
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+              );
+            },
           ),
         ],
       ),
@@ -476,6 +576,97 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
                 child: const Icon(Icons.delete_outline, color: Color(0xFFE02020), size: 22),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------
+  // Seção da Fake API (CamaroteFakeApi) - clientes cadastrados
+  // ---------------------------------------------------------------------
+  Widget secaoClientesFakeApi() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'CLIENTES CADASTRADOS (FAKE API)',
+              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1),
+            ),
+            IconButton(
+              icon: const Icon(Icons.refresh, size: 20),
+              onPressed: () {
+                setState(() {
+                  futureClientesFakeApi = CamaroteFakeApi().listarClientes();
+                });
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        FutureBuilder<List<ClienteCamarote>>(
+          future: futureClientesFakeApi,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text(
+                'Não foi possível carregar os clientes da Fake API: ${snapshot.error}',
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+              );
+            }
+
+            if (!snapshot.hasData) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            List<ClienteCamarote> clientes = snapshot.requireData;
+
+            if (clientes.isEmpty) {
+              return const Text('Nenhum cliente cadastrado na Fake API.');
+            }
+
+            return Column(
+              children: clientes.map((c) => cardClienteFakeApi(c)).toList(),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget cardClienteFakeApi(ClienteCamarote c) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F2F2),
+        border: Border.all(color: Colors.black),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(c.nome, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
+                const SizedBox(height: 2),
+                Text('CPF: ${c.cpf}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(4)),
+            child: Text(
+              c.plano,
+              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800),
+            ),
           ),
         ],
       ),

@@ -1,0 +1,26 @@
+{
+  "clientes_cadastrados": [
+    {
+      "id": 1,
+      "nome": "Marcos Antonio",
+      "email": "marcos03ta@gmail.com",
+      "senha": "123456",
+      "cpf": "123.456.789-09",
+      "plano": "PREMIUM"
+    },
+    {
+      "id": 2,
+      "nome": "Keysson Ruan",
+      "email": "keyssonruan4@gmail.com",
+      "senha": "abcdef",
+      "cpf": "234.567.890-92",
+      "plano": "INTERMEDIÁRIO"
+    },
+    {
+      "id": 3,
+      "nome": "Roberto Carlos",
+      "cpf": "345.678.901-75",
+      "plano": "BASICO"
+    }
+  ]
+}
