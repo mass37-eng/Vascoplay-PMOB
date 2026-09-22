@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'api/camarote_fake_api.dart';
-import 'api/cpf_api.dart';
+import 'api/gerador_pessoas_api.dart';
 import 'database_helper_camarotes.dart';
 import 'domain/cliente_camarote.dart';
-import 'domain/sugestao_cpf.dart';
+import 'domain/pessoa_aleatoria.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,11 +49,7 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
   TextEditingController nomeController = TextEditingController();
   TextEditingController cpfController = TextEditingController();
 
-  // ---------------------------------------------------------------------
-  // As duas APIs consumidas nesta tela ficam em lib/keyssonpreto1/api.
-  // Aqui só guardamos os Futures usados pelos FutureBuilder.
-  // ---------------------------------------------------------------------
-  late Future<List<SugestaoCpf>> futureSugestoesCpf;
+  late Future<List<PessoaAleatoria>> futurePessoasAleatorias;
   late Future<List<ClienteCamarote>> futureClientesFakeApi;
 
   List<Map<String, dynamic>> planos = [
@@ -95,7 +91,7 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
   void initState() {
     super.initState();
     carregarRegistros();
-    futureSugestoesCpf = CpfApi().listarSugestoes();
+    futurePessoasAleatorias = GeradorPessoasApi().listarPessoas();
     futureClientesFakeApi = CamaroteFakeApi().listarClientes();
   }
 
@@ -161,7 +157,7 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
                     cardPlano(1, planos[1]),
                     cardPlano(2, planos[2]),
                     const SizedBox(height: 10),
-                    secaoSugestoesCpf(),
+                    secaoPessoasAleatorias(),
                     const SizedBox(height: 10),
                     formulario(),
                     if (listaRegistros.isNotEmpty) ...[
@@ -306,10 +302,8 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
     );
   }
 
-  // ---------------------------------------------------------------------
-  // Seção da API pública (CpfApi) - sugestões de CPF via FutureBuilder
-  // ---------------------------------------------------------------------
-  Widget secaoSugestoesCpf() {
+
+  Widget secaoPessoasAleatorias() {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFF2F2F2),
@@ -324,26 +318,26 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'SUGESTÕES DE CPF (API PÚBLICA)',
+                'API PÚBLICA',
                 style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 1),
               ),
               IconButton(
                 icon: const Icon(Icons.refresh, size: 20),
                 onPressed: () {
                   setState(() {
-                    futureSugestoesCpf = CpfApi().listarSugestoes();
+                    futurePessoasAleatorias = GeradorPessoasApi().listarPessoas();
                   });
                 },
               ),
             ],
           ),
           const SizedBox(height: 6),
-          FutureBuilder<List<SugestaoCpf>>(
-            future: futureSugestoesCpf,
+          FutureBuilder<List<PessoaAleatoria>>(
+            future: futurePessoasAleatorias,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return Text(
-                  'Não foi possível carregar sugestões: ${snapshot.error}',
+                  'Não foi possivel carregar: ${snapshot.error}',
                   style: const TextStyle(color: Colors.red, fontSize: 12),
                 );
               }
@@ -355,28 +349,28 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
                 );
               }
 
-              List<SugestaoCpf> sugestoes = snapshot.requireData;
+              List<PessoaAleatoria> pessoas = snapshot.requireData;
 
-              if (sugestoes.isEmpty) {
-                return const Text('Nenhuma sugestão disponível no momento.');
+              if (pessoas.isEmpty) {
+                return const Text('Nenhuma sugestão.');
               }
 
               return Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: sugestoes.map((sugestao) {
+                children: pessoas.map((pessoa) {
                   return ActionChip(
                     label: Text(
-                      '${sugestao.nome} • ${sugestao.cpf}',
+                      '${pessoa.nome} • ${pessoa.cpf}',
                       style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
                     ),
                     backgroundColor: Colors.white,
                     side: const BorderSide(color: Colors.black),
                     onPressed: () {
                       setState(() {
-                        cpfController.text = sugestao.cpf;
+                        cpfController.text = pessoa.cpf;
                         if (nomeController.text.trim().isEmpty) {
-                          nomeController.text = sugestao.nome;
+                          nomeController.text = pessoa.nome;
                         }
                       });
                     },
@@ -582,9 +576,7 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
     );
   }
 
-  // ---------------------------------------------------------------------
-  // Seção da Fake API (CamaroteFakeApi) - clientes cadastrados
-  // ---------------------------------------------------------------------
+
   Widget secaoClientesFakeApi() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -593,7 +585,7 @@ class _CamarotesScreenState extends State<CamarotesScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'CLIENTES CADASTRADOS (FAKE API)',
+              'FAKE API',
               style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1),
             ),
             IconButton(

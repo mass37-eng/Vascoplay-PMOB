@@ -4,10 +4,7 @@ class SugestaoCpf {
 
   SugestaoCpf({required this.nome, required this.cpf});
 
-  // Os dados vêm da FakerAPI (API pública real). O campo "documento" é um
-  // número aleatório que aqui formatamos como CPF apenas para servir de
-  // sugestão/preenchimento rápido no formulário (é um dado fictício,
-  // não um CPF real de nenhuma pessoa).
+
   SugestaoCpf.fromJson(Map<String, dynamic> json) {
     nome = json['nome'];
     cpf = _formatarComoCpf(json['documento']);
