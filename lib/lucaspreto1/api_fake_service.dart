@@ -57,7 +57,6 @@ class FormaPagamentoApi {
 }
 
 class ApiFakeService {
-  // >>> TROQUE AQUI PELO SEU USUARIO DO GITHUB <<<
   static const String usuarioGithub = 'Lucasadiel';
   static const String repositorio = 'fake_api';
 
@@ -74,8 +73,6 @@ class ApiFakeService {
         'Falha ao carregar os cartoes (codigo ${resposta.statusCode}).',
       );
     }
-
-    // utf8.decode evita problemas com acentuacao
     final List<dynamic> lista = jsonDecode(utf8.decode(resposta.bodyBytes));
     return lista
         .map((item) => CartaoPresenteApi.fromJson(item as Map<String, dynamic>))
