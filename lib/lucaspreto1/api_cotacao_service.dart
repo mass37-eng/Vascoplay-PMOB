@@ -1,13 +1,3 @@
-// Consumo da API PUBLICA REAL: AwesomeAPI (Economia / Cotacoes)
-// Documentacao: https://docs.awesomeapi.com.br/api-de-moedas
-//
-// Endpoint usado:
-//   GET https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,GBP-BRL,ARS-BRL
-//
-// A API e gratuita e nao exige cadastro nem chave para uso basico.
-// Ela e usada aqui para mostrar quanto custa o Cartao Presente do Vasco
-// para o torcedor que mora fora do Brasil.
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
