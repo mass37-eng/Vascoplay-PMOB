@@ -1,19 +1,3 @@
-// Consumo da API FAKE (My JSON Server), baseada na estrutura do repositorio
-// https://github.com/tarsisms/fake_api
-//
-// COMO PUBLICAR A SUA PROPRIA API FAKE:
-// 1. Crie um repositorio PUBLICO no seu GitHub chamado "fake_api".
-// 2. Suba na raiz dele o arquivo "fake_api/db.json" que esta neste projeto.
-// 3. A API ficara disponivel em:
-//      https://my-json-server.typicode.com/SEU_USUARIO/fake_api
-// 4. Troque a constante "usuarioGithub" abaixo pelo seu usuario do GitHub.
-//
-// Endpoints gerados a partir do db.json:
-//   GET /cartoes            -> lista os cartoes presente
-//   GET /cartoes/1          -> retorna o cartao de id 1
-//   GET /formasPagamento    -> lista as formas de pagamento
-//   GET /users              -> usuarios (usados pelo colega do login)
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
